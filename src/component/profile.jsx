@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Navbar from "./navbar";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // Make sure to import the CSS for the toast notifications
+import "react-toastify/dist/ReactToastify.css"; 
 import { useNavigate } from "react-router-dom";
 
 function Profile() {
@@ -47,7 +47,7 @@ function Profile() {
             setOldPassword("");
             setNewPassword("");
             setConfirmPassword("");
-            setIsPasswordFormVisible(false); // Hide the password form after successful submission
+            setIsPasswordFormVisible(false); 
         } catch (error) {
             toast.error(error.response?.data?.error || "An error occurred.");
         }
@@ -73,7 +73,6 @@ function Profile() {
                     >
                         Change Password
                     </button>
-                    {/* Password change form */}
                     {isPasswordFormVisible && (
                         <form onSubmit={handlePasswordChange} className="space-y-4 mt-6">
                             <div>
@@ -117,7 +116,6 @@ function Profile() {
                 </div>
             </div>
 
-            {/* Toast container to display toast messages */}
             <ToastContainer />
         </>
     );

@@ -20,7 +20,6 @@ function EmpList() {
             const employeeList = response.data.dynamic_data;
             setEmployees(employeeList);
 
-            // Extract unique keys for table headers
             const allKeys = new Set();
             employeeList.forEach((employee) => {
                 if (employee.dynamic_data) {

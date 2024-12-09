@@ -13,7 +13,6 @@ const EmpCreation = () => {
     useEffect(() => {
         if (id) {
 
-            // Fetch the employee data using the ID
             axios.get(`http://127.0.0.1:8000/employee/profile/${id}/`)
                 .then(response => {
                     console.warn(response.data.dynamic_data[0])
@@ -31,11 +30,10 @@ const EmpCreation = () => {
 
 
     useEffect(() => {
-        // Fetch dynamic fields from the backend API
         axios.get('http://127.0.0.1:8000/employee/forms/')
             .then(response => {
                 const fields = response.data.dynamic_data[0]?.dynamic_fields || [];
-                console.log('Fetched dynamic fields:', fields); // Log the fetched data
+                console.log('Fetched dynamic fields:', fields);
                 setFormFields(fields);
                 setLoading(false);
             })
@@ -57,15 +55,15 @@ const EmpCreation = () => {
         e.preventDefault();
 
         const url = id
-            ? `http://127.0.0.1:8000/employee/profile/${id}/` // Update profile if ID exists
-            : 'http://127.0.0.1:8000/employee/profile/';     // Create new profile if no ID
+            ? `http://127.0.0.1:8000/employee/profile/${id}/`
+            : 'http://127.0.0.1:8000/employee/profile/';   
 
-        const method = id ? axios.patch : axios.post; // Choose the correct HTTP method
+        const method = id ? axios.patch : axios.post;
 
         method(url, formData)
             .then(response => {
                 console.log('Profile saved successfully:', response.data);
-                nav("/EmplList"); // Navigate to employee list after success
+                nav("/EmplList");
             })
             .catch(error => {
                 console.error('Error saving profile:', error);

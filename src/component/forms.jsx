@@ -4,16 +4,14 @@ import axios from "axios";
 import Navbar from "./navbar";
 
 const EmployeeForm = () => {
-  const [fields, setFields] = useState([{ label: "", type: "Text" }]); // Start with one default field
-  const [savedFields, setSavedFields] = useState([]); // Saved form structure
-  const [message, setMessage] = useState(""); // Form submission message
+  const [fields, setFields] = useState([{ label: "", type: "Text" }]); 
+  const [savedFields, setSavedFields] = useState([]); 
+  const [message, setMessage] = useState(""); 
 
-  // Add a new field
   const addField = () => {
     setFields([...fields, { label: "", type: "Text" }]);
   };
 
-  // Update a field
   const updateField = (index, key, value) => {
     const updatedFields = fields.map((field, i) =>
       i === index ? { ...field, [key]: value } : field
@@ -21,7 +19,6 @@ const EmployeeForm = () => {
     setFields(updatedFields);
   };
 
-  // Remove a field (from savedFields or new fields)
   const removeField = (index, isSaved = false) => {
     if (isSaved) {
       const updatedSavedFields = savedFields.filter((_, i) => i !== index);
@@ -32,7 +29,6 @@ const EmployeeForm = () => {
     }
   };
 
-  // Prevent duplicate labels
   const isDuplicateLabel = (label) => {
     const allLabels = [
       ...savedFields.map((field) => field.label.toLowerCase()),
@@ -42,7 +38,6 @@ const EmployeeForm = () => {
   };
 
   useEffect(() => {
-    // Fetch dynamic fields from the backend API
     axios
       .get("http://127.0.0.1:8000/employee/forms/")
       .then((response) => {
@@ -54,7 +49,6 @@ const EmployeeForm = () => {
       });
   }, []);
 
-  // Handle form structure submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -72,14 +66,13 @@ const EmployeeForm = () => {
       setMessage("Form structure saved successfully!");
 
       setSavedFields(formattedFields);
-      setFields([{ label: "", type: "Text" }]); // Reset to one field after saving
+      setFields([{ label: "", type: "Text" }]); 
     } catch (error) {
       console.error("Error saving form structure:", error);
       setMessage("Failed to save form structure.");
     }
   };
 
-  // Handle drag-and-drop event
   const onDragEnd = async (result) => {
     const { source, destination } = result;
     if (!destination) return;
