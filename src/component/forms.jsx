@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import axios from "axios";
+import Navbar from "./navbar";
 
 const EmployeeForm = () => {
-  const [fields, setFields] = useState([]); // Current form structure
+  const [fields, setFields] = useState([{ label: "", type: "Text" }]); // Start with one default field
   const [savedFields, setSavedFields] = useState([]); // Saved form structure
   const [message, setMessage] = useState(""); // Form submission message
 
@@ -71,7 +72,7 @@ const EmployeeForm = () => {
       setMessage("Form structure saved successfully!");
 
       setSavedFields(formattedFields);
-      setFields([]);
+      setFields([{ label: "", type: "Text" }]); // Reset to one field after saving
     } catch (error) {
       console.error("Error saving form structure:", error);
       setMessage("Failed to save form structure.");
@@ -99,134 +100,130 @@ const EmployeeForm = () => {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen flex flex-col items-center justify-center space-y-8">
-      <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
-        <h1 className="text-xl font-bold mb-4 text-center">Employee Form</h1>
+    <>
+      <Navbar />
+      <div className="bg-gray-100 min-h-screen flex flex-col items-center justify-center space-y-8">
+        <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
+          <h1 className="text-xl font-bold mb-4 text-center">Employee Form</h1>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {fields.map((field, index) => (
-            <div key={index} className="flex items-center gap-4">
-              <input
-                type="text"
-                value={field.label}
-                placeholder="Label"
-                onChange={(e) => {
-                  updateField(index, "label", e.target.value);
-                  if (isDuplicateLabel(e.target.value)) {
-                    setMessage("Field labels must be unique.");
-                  } else {
-                    setMessage("");
-                  }
-                }}
-                className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <select
-                value={field.type}
-                onChange={(e) => updateField(index, "type", e.target.value)}
-                className="border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="Text">Text</option>
-                <option value="Number">Number</option>
-                <option value="Date">Date</option>
-                <option value="Password">Password</option>
-              </select>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {fields.map((field, index) => (
+              <div key={index} className="flex items-center gap-4">
+                <input
+                  type="text"
+                  value={field.label}
+                  placeholder="Label"
+                  onChange={(e) => {
+                    updateField(index, "label", e.target.value);
+                    if (isDuplicateLabel(e.target.value)) {
+                      setMessage("Field labels must be unique.");
+                    } else {
+                      setMessage("");
+                    }
+                  }}
+                  className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <select
+                  value={field.type}
+                  onChange={(e) => updateField(index, "type", e.target.value)}
+                  className="border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="Text">Text</option>
+                  <option value="Number">Number</option>
+                  <option value="Date">Date</option>
+                  <option value="Password">Password</option>
+                </select>
+              </div>
+            ))}
+
+            <div className="mt-4 flex justify-between">
               <button
                 type="button"
-                onClick={() => removeField(index, false)}
-                className="text-red-500 hover:text-red-700 font-bold"
+                onClick={addField}
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                X
+                Add Field
+              </button>
+              <button
+                type="submit"
+                disabled={fields.every((field) => field.label.trim() === "")}
+                className={`bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                  fields.every((field) => field.label.trim() === "")
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }`}
+              >
+                Save
               </button>
             </div>
-          ))}
+          </form>
 
-          <div className="mt-4 flex justify-between">
-            <button
-              type="button"
-              onClick={addField}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              Add Field
-            </button>
-            <button
-              type="submit"
-              disabled={fields.every((field) => field.label.trim() === "")}
-              className={`bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                fields.every((field) => field.label.trim() === "")
-                  ? "opacity-50 cursor-not-allowed"
-                  : ""
+          {message && (
+            <div
+              className={`mt-4 p-2 text-center ${
+                message.includes("successfully")
+                  ? "text-green-600 bg-green-100"
+                  : "text-red-600 bg-red-100"
               }`}
             >
-              Save
-            </button>
-          </div>
-        </form>
+              {message}
+            </div>
+          )}
+        </div>
 
-        {message && (
-          <div
-            className={`mt-4 p-2 text-center ${
-              message.includes("successfully")
-                ? "text-green-600 bg-green-100"
-                : "text-red-600 bg-red-100"
-            }`}
-          >
-            {message}
-          </div>
+        {savedFields.length > 0 && (
+          <DragDropContext onDragEnd={onDragEnd}>
+            <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
+              <h2 className="text-lg font-bold mb-4 text-center">Saved Fields</h2>
+              <Droppable droppableId="droppable">
+                {(provided) => (
+                  <div
+                    className="space-y-4"
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {savedFields.map((field, index) => (
+                      <Draggable key={field.label} draggableId={field.label} index={index}>
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            className="flex items-center gap-4"
+                            style={{
+                              border: "1px solid #ccc",
+                              padding: "10px",
+                              borderRadius: "4px",
+                              cursor: "move",
+                              ...provided.draggableProps.style,
+                            }}
+                          >
+                            <label className="font-medium">{field.label}</label>
+                            <input
+                              type={field.type.toLowerCase()}
+                              placeholder={`Enter ${field.label}`}
+                              className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeField(index, true)}
+                              className="text-red-500 hover:text-red-700 font-bold"
+                            >
+                              X
+                            </button>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </div>
+          </DragDropContext>
         )}
       </div>
-
-      {savedFields.length > 0 && (
-        <DragDropContext onDragEnd={onDragEnd}>
-          <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-lg font-bold mb-4 text-center">Saved Fields</h2>
-            <Droppable droppableId="droppable">
-              {(provided) => (
-                <div
-                  className="space-y-4"
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                >
-                  {savedFields.map((field, index) => (
-                    <Draggable key={field.label} draggableId={field.label} index={index}>
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          className="flex items-center gap-4"
-                          style={{
-                            border: "1px solid #ccc",
-                            padding: "10px",
-                            borderRadius: "4px",
-                            cursor: "move",
-                            ...provided.draggableProps.style,
-                          }}
-                        >
-                          <label className="font-medium">{field.label}</label>
-                          <input
-                            type={field.type.toLowerCase()}
-                            placeholder={`Enter ${field.label}`}
-                            className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => removeField(index, true)}
-                            className="text-red-500 hover:text-red-700 font-bold"
-                          >
-                            X
-                          </button>
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </div>
-        </DragDropContext>
-      )}
-    </div>
+    </>
   );
 };
 

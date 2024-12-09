@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./navbar";
 
 function EmpList() {
     const [employees, setEmployees] = useState([]);
@@ -80,6 +81,8 @@ function EmpList() {
     }, []);
 
     return (
+        <>
+        <Navbar/>
         <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-8">
             <h2 className="text-2xl font-semibold text-center mb-6">Employee List</h2>
 
@@ -88,7 +91,7 @@ function EmpList() {
                     name="searchField"
                     onChange={handleSearchChange}
                     className="border px-4 py-2 rounded-md"
-                >
+                    >
                     <option value="">Select Field</option>
                     {headers.map((header, index) => (
                         <option key={index} value={header}>
@@ -103,7 +106,7 @@ function EmpList() {
                     onChange={handleSearchChange}
                     placeholder="Enter value"
                     className="border px-4 py-2 rounded-md flex-grow"
-                />
+                    />
                 <button
                     type="submit"
                     className="bg-blue-500 text-white px-4 py-2 rounded-lg"
@@ -122,7 +125,7 @@ function EmpList() {
             <button
                 onClick={() => nav("/EmpCreation")}
                 className="w-full bg-green-500 text-white px-4 py-2 rounded-lg text-lg font-medium hover:bg-green-600 transition duration-200 ease-in-out mb-6"
-            >
+                >
                 Add Employee
             </button>
 
@@ -159,7 +162,7 @@ function EmpList() {
                                         <button
                                             onClick={() => handleDelete(employee.id)}
                                             className="text-red-500 hover:text-red-700"
-                                        >
+                                            >
                                             Delete
                                         </button>
                                     </td>
@@ -172,6 +175,7 @@ function EmpList() {
                 )}
             </div>
         </div>
+        </>
     );
 }
 
